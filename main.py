@@ -60,6 +60,15 @@ def add_product_to_cart(cart_id, token, product):
     return response.json()
 
 
+def get_cart(token, reference):
+    cart_url = f'https://api.moltin.com/v2/carts/{reference}'
+    headers = {
+        'Authorization': 'Bearer {}'.format(token),
+    }
+    response = requests.get(cart_url, headers=headers)
+    response.raise_for_status()
+    return response.json()
+
 
 if __name__ == '__main__':
     load_dotenv()
