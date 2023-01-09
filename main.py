@@ -34,12 +34,31 @@ def create_cart(token):
     }
     data = {
         'data': {
-            "name": "Bob’s cart",
+            "name": "test",
         }
     }
     response = requests.post(carts_url, headers=headers, json=data)
     response.raise_for_status()
-    return response.json()['id']
+    return response.json()['data']['id']
+
+
+def add_product_to_cart(cart_id, token, product):
+    carts_url = f'https://api.moltin.com/v2/carts/{cart_id}/items/'
+    headers = {
+        'Authorization': 'Bearer {}'.format(token),
+        'Content-Type': 'application/json',
+    }
+    data = {
+        'data': {
+            'id': product['id'],
+            'type': 'cart_item',
+            'quantity': 1,
+        }
+    }
+    response = requests.post(carts_url, headers=headers, json=data)
+    response.raise_for_status()
+    return response.json()
+
 
 
 if __name__ == '__main__':
