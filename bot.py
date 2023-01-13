@@ -119,9 +119,8 @@ if __name__ == '__main__':
 
     updater = Updater(token)
     dispatcher = updater.dispatcher
-    # dispatcher.add_handler(CallbackQueryHandler(handle_users_reply))
-    # dispatcher.add_handler(MessageHandler(Filters.text, handle_users_reply))
-    # dispatcher.add_handler(MessageHandler(Filters.text, handle_users_reply))
     dispatcher.add_handler(CommandHandler('start', functools.partial(start, token=elasticpath_token)))
-    dispatcher.add_handler(CommandHandler(handle_menu))
+    dispatcher.add_handler(CallbackQueryHandler(functools.partial(handle_menu, token=elasticpath_token)))
+    dispatcher.add_handler(CallbackQueryHandler(functools.partial(handle_users_reply, token=elasticpath_token)))
+
     updater.start_polling()
