@@ -9,7 +9,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Filters, Updater
 from telegram.ext import CallbackQueryHandler, CommandHandler, MessageHandler
 
-from elasticpath import get_token, get_products
+from elasticpath import get_token, get_products, get_product_by_id, get_cart, get_product_image
 
 _database = None
 
@@ -69,16 +69,7 @@ def handle_menu(bot, update, token):
 
 def get_database_connection():
     """
-    Функция, которая запускается при любом сообщении от пользователя и решает как его обработать.
-    Эта функция запускается в ответ на эти действия пользователя:
-        * Нажатие на inline-кнопку в боте
-        * Отправка сообщения боту
-        * Отправка команды боту
-    Она получает стейт пользователя из базы данных и запускает соответствующую функцию-обработчик (хэндлер).
-    Функция-обработчик возвращает следующее состояние, которое записывается в базу данных.
-    Если пользователь только начал пользоваться ботом, Telegram форсит его написать "/start",
-    поэтому по этой фразе выставляется стартовое состояние.
-    Если пользователь захочет начать общение с ботом заново, он также может воспользоваться этой командой.
+    Возвращает конекшн с базой данных Redis, либо создаёт новый, если он ещё не создан.
     """
     global _database
     if _database is None:
@@ -119,6 +110,13 @@ if __name__ == '__main__':
     client_secret = os.environ['CLIENT_SECRET']
 
     elasticpath_token = get_token(client_id, client_secret)
+
+    db_host = os.environ['DATABASE_HOST']
+    db_port = os.environ['DATABASE_PORT']
+    db_password = os.environ['DATABASE_PASSWORD']
+
+    database = redis.Redis(host=db_host, port=db_port, password=db_password)
+
     updater = Updater(token)
     dispatcher = updater.dispatcher
     # dispatcher.add_handler(CallbackQueryHandler(handle_users_reply))
