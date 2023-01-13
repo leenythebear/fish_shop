@@ -29,6 +29,19 @@ def create_products_buttons(token):
     return reply_markup
 
 
+def create_products_in_cart_buttons(products):
+    keyboard = [
+        [InlineKeyboardButton(f"Убрать из корзины {product['name']}",
+                              callback_data=product['name'])]
+        for product in products]
+    keyboard.append(
+        [InlineKeyboardButton('В меню', callback_data='menu'),
+         InlineKeyboardButton('Оплатить', callback_data='email')]
+    )
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    return reply_markup
+
+
 def start(bot, update, token):
     reply_markup = create_products_buttons(token)
     update.message.reply_text('Please choose:', reply_markup=reply_markup)
