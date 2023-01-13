@@ -48,7 +48,26 @@ def start(bot, update, token):
     return "HANDLE_MENU"
 
 
-def handle_menu(bot, update):
+def handle_menu(bot, update, token):
+    query = update.callback_query
+    if query.data == 'cart':
+        chat_id = update.callback_query.message.chat_id
+        products_in_cart = get_cart(token)
+    else:
+        product_id = update.callback_query.data
+        product = get_product_by_id(product_id, token)
+
+        product_name = product['attributes']['name']
+        product_description = product['attributes']['description']
+        image_id = product['relationships']['main_image']['data']['id']
+        image_url = get_product_image(token, image_id)['data']['link']['href']
+
+        message = f"{product_name}\n\n{product_description}"
+        bot.send_photo(chat_id=query.message.chat_id, photo=image_url, caption=message)
+        return "START"
+
+
+def get_database_connection():
     """
     Функция, которая запускается при любом сообщении от пользователя и решает как его обработать.
     Эта функция запускается в ответ на эти действия пользователя:
