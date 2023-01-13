@@ -78,7 +78,6 @@ def add_product_to_cart(cart_id, token, product):
     }
     response = requests.post(cart_url, headers=headers, json=data)
     response.raise_for_status()
-    print(111, response.text)
     return response.json()
 
 
