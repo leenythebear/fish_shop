@@ -83,13 +83,13 @@ def add_product_to_cart(cart_id, token, product):
 
 
 def get_cart(token, reference):
-    cart_url = f'https://api.moltin.com/v2/carts/{reference}'
+    cart_url = f'https://api.moltin.com/v2/carts/{reference}/items'
     headers = {
         'Authorization': 'Bearer {}'.format(token),
     }
     response = requests.get(cart_url, headers=headers)
     response.raise_for_status()
-    return response.text
+    return response.json()['data']
 
 
 if __name__ == '__main__':
