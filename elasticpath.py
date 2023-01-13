@@ -25,6 +25,28 @@ def get_products(token):
     return response.json()
 
 
+def get_product_by_id(product_id, token):
+    # token = get_token(client_id, client_secret)
+    headers = {
+        'Authorization': f'Bearer {token}',
+    }
+
+    response = requests.get(f'https://api.moltin.com/pcm/products/{product_id}/',
+                            headers=headers)
+    response.raise_for_status()
+
+    return response.json()['data']
+
+
+def get_product_image(token, image_id):
+    headers = {
+        'Authorization': f'Bearer {token}',
+    }
+    response = requests.get(f'https://api.moltin.com/v2/files/{image_id}', headers=headers)
+    response.raise_for_status()
+    return response.json()
+
+
 def create_cart(token):
     carts_url = 'https://api.moltin.com/v2/carts'
     headers = {
