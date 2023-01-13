@@ -19,7 +19,6 @@ def create_products_buttons(token):
     Функция для создания кнопок меню с товарами
     """
     products = get_products(token)['data']
-    print(products[0])
     keyboard = [
         [InlineKeyboardButton(product['attributes']['name'], callback_data=product['id'])]
         for product in products]
