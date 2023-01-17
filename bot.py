@@ -62,7 +62,18 @@ def handle_menu(bot, update, token):
         image_url = get_product_image(token, image_id)['data']['link']['href']
 
         message = f"{product_name}\n\n{product_description}"
-        bot.send_photo(chat_id=query.message.chat_id, photo=image_url, caption=message)
+        keyboard = [[InlineKeyboardButton('Назад', callback_data='back')]]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        print(111, type(reply_markup))
+        # print(111, dict(bot.send_photo))
+        bot.send_photo(chat_id=query.message.chat_id, photo=image_url, caption=message, reply_markup=reply_markup)
+        return 'HANDLE_DESCRIPTION'
+
+
+def handle_description(bot, update, token):
+    query = update.callback_query
+    print(1234566778)
+    if query.data == 'back':
         return "START"
 
 
@@ -91,11 +102,14 @@ def handle_users_reply(update, context):
         return
     if user_reply == '/start':
         user_state = 'START'
+    elif user_reply == 'back':
+        user_state = 'START'
     else:
         user_state = db.get(chat_id).decode("utf-8")
     states_functions = {
         'START': start,
         'HANDLE_MENU': handle_menu,
+        'HANDLE_DESCRIPTION': handle_description,
     }
     state_handler = states_functions[user_state]
     next_state = state_handler(update, context)
