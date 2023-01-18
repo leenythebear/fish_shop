@@ -43,7 +43,11 @@ def create_products_in_cart_buttons(products):
 
 def start(bot, update, token):
     reply_markup = create_products_buttons(token)
-    update.message.reply_text('Please choose:', reply_markup=reply_markup)
+    if update.callback_query:
+        bot.send_message(chat_id=update.callback_query.message.chat_id, text='Please choose:', reply_markup=reply_markup)
+    elif update.message:
+        update.message.reply_text('Please choose:', reply_markup=reply_markup)
+    bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
     return "HANDLE_MENU"
 
 
