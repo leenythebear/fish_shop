@@ -81,21 +81,19 @@ def handle_description(bot, update, token):
         return "START"
 
 
-def get_database_connection():
+def get_database_connection(host, port, password):
     """
     Возвращает конекшн с базой данных Redis, либо создаёт новый, если он ещё не создан.
     """
     global _database
     if _database is None:
-        database_password = os.getenv("DATABASE_PASSWORD")
-        database_host = os.getenv("DATABASE_HOST")
-        database_port = os.getenv("DATABASE_PORT")
-        _database = redis.Redis(host=database_host, port=database_port, password=database_password)
+        _database = redis.Redis(host=host, port=port, password=password)
     return _database
 
 
-def handle_users_reply(update, context):
-    db = context.bot_data['db']
+def handle_users_reply(bot, update, host, port, password, client_id, client_secret):
+    print(111)
+    db = get_database_connection(host, port, password)
     if update.message:
         user_reply = update.message.text
         chat_id = update.message.chat_id
@@ -110,13 +108,14 @@ def handle_users_reply(update, context):
         user_state = 'START'
     else:
         user_state = db.get(chat_id).decode("utf-8")
+    token = get_token(client_id, client_secret)
     states_functions = {
-        'START': start,
-        'HANDLE_MENU': handle_menu,
-        'HANDLE_DESCRIPTION': handle_description,
+        'START': functools.partial(start, token=token),
+        'HANDLE_MENU': functools.partial(handle_menu, token=token),
+        'HANDLE_DESCRIPTION': functools.partial(handle_description, token=token)
     }
     state_handler = states_functions[user_state]
-    next_state = state_handler(update, context)
+    next_state = state_handler(bot, update)
     db.set(chat_id, next_state)
 
 
@@ -132,12 +131,17 @@ if __name__ == '__main__':
     db_port = os.environ['DATABASE_PORT']
     db_password = os.environ['DATABASE_PASSWORD']
 
-    database = redis.Redis(host=db_host, port=db_port, password=db_password)
+    partial_handle_users_reply = functools.partial(handle_users_reply, host=db_host, port=db_port, password=db_password, client_id=client_id, client_secret=client_secret)
+
+    # database = redis.Redis(host=db_host, port=db_port, password=db_password)
 
     updater = Updater(token)
     dispatcher = updater.dispatcher
-    dispatcher.add_handler(CommandHandler('start', functools.partial(start, token=elasticpath_token)))
-    dispatcher.add_handler(CallbackQueryHandler(functools.partial(handle_menu, token=elasticpath_token)))
-    dispatcher.add_handler(CallbackQueryHandler(functools.partial(handle_users_reply, token=elasticpath_token)))
+    # dispatcher.add_handler(CommandHandler('start', functools.partial(start, token=elasticpath_token)))
+    # dispatcher.add_handler(CallbackQueryHandler(functools.partial(handle_menu, token=elasticpath_token)))
+    # dispatcher.add_handler(CallbackQueryHandler(functools.partial(handle_users_reply, token=elasticpath_token)))
+    dispatcher.add_handler(CallbackQueryHandler(partial_handle_users_reply))
+    dispatcher.add_handler(MessageHandler(Filters.text, partial_handle_users_reply))
+    dispatcher.add_handler(CommandHandler('start', partial_handle_users_reply))
 
     updater.start_polling()
