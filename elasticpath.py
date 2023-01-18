@@ -31,7 +31,7 @@ def get_product_by_id(product_id, token):
         'Authorization': f'Bearer {token}',
     }
 
-    response = requests.get(f'https://api.moltin.com/pcm/products/{product_id}/',
+    response = requests.get(f"https://api.moltin.com/pcm/catalog/products/{product_id}",
                             headers=headers)
     response.raise_for_status()
 
