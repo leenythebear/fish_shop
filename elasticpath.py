@@ -38,6 +38,16 @@ def get_product_by_id(product_id, token):
     return response.json()['data']
 
 
+def get_product_stock(product, token):
+    stock_url = f'https://api.moltin.com/v2/inventories/{product["id"]}'
+    headers = {
+        'Authorization': f'Bearer {token}',
+    }
+    response = requests.get(stock_url, headers=headers)
+    response.raise_for_status()
+    return response.json()['data']['total']
+
+
 def get_product_image(token, image_id):
     headers = {
         'Authorization': f'Bearer {token}',
