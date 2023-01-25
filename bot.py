@@ -60,10 +60,13 @@ def handle_menu(bot, update, token):
         product_id = update.callback_query.data
         product = get_product_by_id(product_id, token)
 
-        product_name = product['attributes']['name']
-        product_description = product['attributes']['description']
-        image_id = product['relationships']['main_image']['data']['id']
-        image_url = get_product_image(token, image_id)['data']['link']['href']
+    product_name = product['attributes']['name']
+    product_price = product['meta']['display_price']['with_tax']['formatted']
+    product_description = product['attributes']['description']
+    product_stock = get_product_stock(product, token)
+
+    image_id = product['relationships']['main_image']['data']['id']
+    image_url = get_product_image(token, image_id)['data']['link']['href']
 
         message = f"{product_name}\n\n{product_description}"
         keyboard = [[InlineKeyboardButton('Назад', callback_data='back')]]
