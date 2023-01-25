@@ -68,20 +68,30 @@ def handle_menu(bot, update, token):
     image_id = product['relationships']['main_image']['data']['id']
     image_url = get_product_image(token, image_id)['data']['link']['href']
 
-        message = f"{product_name}\n\n{product_description}"
-        keyboard = [[InlineKeyboardButton('Назад', callback_data='back')]]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        print(111, type(reply_markup))
-        # print(111, dict(bot.send_photo))
-        bot.send_photo(chat_id=query.message.chat_id, photo=image_url, caption=message, reply_markup=reply_markup)
-        return 'HANDLE_DESCRIPTION'
+    message = f"{product_name}\n\n{product_price} per kg\n{product_stock} kg on stock\n\n{product_description}"
+    keyboard = [[InlineKeyboardButton('1 кг', callback_data=f'{query.data},1'),
+                 InlineKeyboardButton('5 кг', callback_data=f'{query.data},5'),
+                 InlineKeyboardButton('10 кг', callback_data=f'{query.data},10')],
+                [InlineKeyboardButton('Назад', callback_data='back')]]
+    reply_markup = InlineKeyboardMarkup(keyboard, n_cols=3)
+    bot.send_photo(chat_id=query.message.chat_id, photo=image_url, caption=message, reply_markup=reply_markup)
+    # bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
+    return 'HANDLE_DESCRIPTION'
 
 
 def handle_description(bot, update, token):
     query = update.callback_query
-    print(1234566778)
+    chat_id = update.callback_query.message.chat_id
+
+    print('handle_description_data', query.data)
     if query.data == 'back':
-        return "START"
+        start(bot, update, token)
+        return "HANDLE_MENU"
+    else:
+        product_id, product_quantity = query.data.split(',')
+        add_product_to_cart(chat_id, token, product_id, int(product_quantity))
+        cart = get_cart(token, chat_id)
+        return "HANDLE_DESCRIPTION"
 
 
 def get_database_connection(host, port, password):
