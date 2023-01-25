@@ -104,7 +104,6 @@ def get_database_connection(host, port, password):
 
 
 def handle_users_reply(bot, update, host, port, password, client_id, client_secret):
-    print(111)
     db = get_database_connection(host, port, password)
     if update.message:
         user_reply = update.message.text
