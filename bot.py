@@ -56,9 +56,8 @@ def handle_menu(bot, update, token):
     if query.data == 'cart':
         chat_id = update.callback_query.message.chat_id
         products_in_cart = get_cart(token)
-    else:
-        product_id = update.callback_query.data
-        product = get_product_by_id(product_id, token)
+    product_id = update.callback_query.data
+    product = get_product_by_id(product_id, token)
 
     product_name = product['attributes']['name']
     product_price = product['meta']['display_price']['with_tax']['formatted']
