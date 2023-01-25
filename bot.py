@@ -127,8 +127,12 @@ def handle_users_reply(bot, update, host, port, password, client_id, client_secr
         'HANDLE_DESCRIPTION': functools.partial(handle_description, token=token)
     }
     state_handler = states_functions[user_state]
-    next_state = state_handler(bot, update)
-    db.set(chat_id, next_state)
+
+    try:
+        next_state = state_handler(bot, update)
+        db.set(chat_id, next_state)
+    except Exception as err:
+        print(err)
 
 
 if __name__ == '__main__':
