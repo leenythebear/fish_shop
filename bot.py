@@ -9,7 +9,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Filters, Updater
 from telegram.ext import CallbackQueryHandler, CommandHandler, MessageHandler
 
-from elasticpath import get_token, get_products, get_product_by_id, get_cart, get_product_image
+from elasticpath import get_token, get_products, get_product_by_id, get_cart, get_product_image, get_product_stock, add_product_to_cart
 
 _database = None
 
@@ -146,13 +146,8 @@ if __name__ == '__main__':
 
     partial_handle_users_reply = functools.partial(handle_users_reply, host=db_host, port=db_port, password=db_password, client_id=client_id, client_secret=client_secret)
 
-    # database = redis.Redis(host=db_host, port=db_port, password=db_password)
-
     updater = Updater(token)
     dispatcher = updater.dispatcher
-    # dispatcher.add_handler(CommandHandler('start', functools.partial(start, token=elasticpath_token)))
-    # dispatcher.add_handler(CallbackQueryHandler(functools.partial(handle_menu, token=elasticpath_token)))
-    # dispatcher.add_handler(CallbackQueryHandler(functools.partial(handle_users_reply, token=elasticpath_token)))
     dispatcher.add_handler(CallbackQueryHandler(partial_handle_users_reply))
     dispatcher.add_handler(MessageHandler(Filters.text, partial_handle_users_reply))
     dispatcher.add_handler(CommandHandler('start', partial_handle_users_reply))
