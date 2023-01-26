@@ -81,7 +81,7 @@ def handle_description(bot, update, token):
         if len(split_query) == 2:
             product_id, product_quantity = split_query
             add_product_to_cart(chat_id, token, product_id, int(product_quantity))
-            # cart = get_cart(token, chat_id)
+            bot.answer_callback_query(callback_query_id=query.id, text='Товар добавлен в корзину', show_alert=False)
         return "HANDLE_DESCRIPTION"
 
 
