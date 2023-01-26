@@ -1,4 +1,5 @@
 import functools
+from textwrap import dedent
 
 from dotenv import load_dotenv
 import os
@@ -102,16 +103,24 @@ def handle_cart(bot, update, token):
     print(query)
     chat_id = query['message']['chat']['id']
     if query.data == 'cart':
-        # bot.send_message(chat_id=chat_id, text='Ваша корзина')
         products_cart = get_cart(token, reference=chat_id)
-        carts_sum = get_carts_sum(token, reference=chat_id)
+        message = ''
+        for product in products_cart:
+            cart_description = f"""\
+                                   {product["name"]}
+                                   {product["description"]} 
+                                   {product["unit_price"]["amount"]} per kg 
+                                   {product["quantity"]} kg in cart for ${product["value"]["amount"]}
+                                    
+                                    """
+            message += dedent(cart_description)
         keyboard = [[InlineKeyboardButton(f'Удалить {product["name"]}', callback_data=product["id"])] for product in
                     products_cart]
         if products_cart:
             keyboard.append([InlineKeyboardButton('Оплата', callback_data='pay')])
         keyboard.append([InlineKeyboardButton('Меню', callback_data='start')])
         reply_markup = InlineKeyboardMarkup(keyboard)
-        bot.send_message(chat_id=chat_id, text='Ваша корзина', reply_markup=reply_markup)
+        bot.send_message(chat_id=chat_id, text=message, reply_markup=reply_markup)
         return "HANDLE_DESCRIPTION"
     elif query.data == 'start':
         start(bot, update, token)
