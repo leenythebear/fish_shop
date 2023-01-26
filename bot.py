@@ -70,7 +70,8 @@ def handle_menu(bot, update, token):
     keyboard = [[InlineKeyboardButton('1 кг', callback_data=f'{query.data},1'),
                  InlineKeyboardButton('5 кг', callback_data=f'{query.data},5'),
                  InlineKeyboardButton('10 кг', callback_data=f'{query.data},10')],
-                [InlineKeyboardButton('Назад', callback_data='start')]]
+                [InlineKeyboardButton('Назад', callback_data='start')],
+                [InlineKeyboardButton('Корзина', callback_data='cart')]]
     reply_markup = InlineKeyboardMarkup(keyboard, n_cols=3)
     bot.send_photo(chat_id=query.message.chat_id, photo=image_url, caption=message, reply_markup=reply_markup)
     return 'HANDLE_DESCRIPTION'
