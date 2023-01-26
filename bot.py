@@ -9,6 +9,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from telegram.ext import Filters, Updater
 from telegram.ext import CallbackQueryHandler, CommandHandler, MessageHandler
+from validate_email import validate_email
 
 from elasticpath import get_token, get_products, get_product_by_id, get_cart, get_product_image, get_product_stock, add_product_to_cart, get_carts_sum, delete_product_from_cart
 
@@ -147,6 +148,23 @@ def handle_cart(bot, update, token):
         reply_markup = InlineKeyboardMarkup(keyboard)
         bot.send_message(chat_id=chat_id, text=message, reply_markup=reply_markup)
         return "HANDLE_DESCRIPTION"
+    elif query.data == 'pay':
+        bot.send_message(chat_id=chat_id, text='Введите Ваш email:')
+        return "WAITING_EMAIL"
+
+
+def waiting_email(bot, update, token):
+    email = update.message.text
+    chat_id = update.message.chat_id
+    is_valid = validate_email(email_address=email)
+    if is_valid:
+        create_customer(token, email, chat_id)
+        bot.send_message(chat_id=chat_id, text='Ваш заказ создан')
+        start(bot, update, token)
+        return "START"
+    else:
+        bot.send_message(chat_id=chat_id, text='Введите корректный email')
+        return "WAITING_EMAIL"
 
 
 def get_database_connection(host, port, password):
@@ -178,7 +196,8 @@ def handle_users_reply(bot, update, host, port, password, client_id, client_secr
         'START': functools.partial(start, token=token),
         'HANDLE_MENU': functools.partial(handle_menu, token=token),
         'HANDLE_DESCRIPTION': functools.partial(handle_description, token=token),
-        'HANDLE_CART': functools.partial(handle_cart, token=token)
+        'HANDLE_CART': functools.partial(handle_cart, token=token),
+        'WAITING_EMAIL': functools.partial(waiting_email, token=token)
     }
     state_handler = states_functions[user_state]
     try:
