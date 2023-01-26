@@ -10,7 +10,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Filters, Updater
 from telegram.ext import CallbackQueryHandler, CommandHandler, MessageHandler
 
-from elasticpath import get_token, get_products, get_product_by_id, get_cart, get_product_image, get_product_stock, add_product_to_cart, get_carts_sum
+from elasticpath import get_token, get_products, get_product_by_id, get_cart, get_product_image, get_product_stock, add_product_to_cart
 
 _database = None
 
