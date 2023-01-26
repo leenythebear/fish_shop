@@ -47,7 +47,6 @@ def start(bot, update, token):
         bot.send_message(chat_id=update.callback_query.message['chat']['id'], text='Please choose:', reply_markup=reply_markup)
     elif update.message:
         update.message.reply_text('Please choose:', reply_markup=reply_markup)
-    bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
     return "HANDLE_MENU"
 
 
@@ -74,7 +73,6 @@ def handle_menu(bot, update, token):
                 [InlineKeyboardButton('Назад', callback_data='start')]]
     reply_markup = InlineKeyboardMarkup(keyboard, n_cols=3)
     bot.send_photo(chat_id=query.message.chat_id, photo=image_url, caption=message, reply_markup=reply_markup)
-    # bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
     return 'HANDLE_DESCRIPTION'
 
 
