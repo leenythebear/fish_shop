@@ -10,7 +10,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Filters, Updater
 from telegram.ext import CallbackQueryHandler, CommandHandler, MessageHandler
 
-from elasticpath import get_token, get_products, get_product_by_id, get_cart, get_product_image, get_product_stock, add_product_to_cart
+from elasticpath import get_token, get_products, get_product_by_id, get_cart, get_product_image, get_product_stock, add_product_to_cart, get_carts_sum, delete_product_from_cart
 
 _database = None
 
@@ -25,19 +25,6 @@ def create_products_buttons(token):
         for product in products]
     keyboard.append(
         [InlineKeyboardButton('Корзина', callback_data='cart')])
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    return reply_markup
-
-
-def create_products_in_cart_buttons(products):
-    keyboard = [
-        [InlineKeyboardButton(f"Убрать из корзины {product['name']}",
-                              callback_data=product['name'])]
-        for product in products]
-    keyboard.append(
-        [InlineKeyboardButton('В меню', callback_data='menu'),
-         InlineKeyboardButton('Оплатить', callback_data='email')]
-    )
     reply_markup = InlineKeyboardMarkup(keyboard)
     return reply_markup
 
@@ -104,6 +91,7 @@ def handle_cart(bot, update, token):
     chat_id = query['message']['chat']['id']
     if query.data == 'cart':
         products_cart = get_cart(token, reference=chat_id)
+        carts_sum = get_carts_sum(token, chat_id)
         message = ''
         for product in products_cart:
             cart_description = f"""\
@@ -111,10 +99,17 @@ def handle_cart(bot, update, token):
                                    {product["description"]} 
                                    {product["unit_price"]["amount"]} per kg 
                                    {product["quantity"]} kg in cart for ${product["value"]["amount"]}
+                                   ______________________________
                                     
                                     """
             message += dedent(cart_description)
-        keyboard = [[InlineKeyboardButton(f'Удалить {product["name"]}', callback_data=product["id"])] for product in
+        sum_message = f"""\
+                            Total: {carts_sum}
+                                
+                        """
+        message += dedent(sum_message)
+        # print(666, products_cart)
+        keyboard = [[InlineKeyboardButton(f'Удалить {product["name"]}', callback_data=f'delete,{product["id"]}')] for product in
                     products_cart]
         if products_cart:
             keyboard.append([InlineKeyboardButton('Оплата', callback_data='pay')])
@@ -125,6 +120,39 @@ def handle_cart(bot, update, token):
     elif query.data == 'start':
         start(bot, update, token)
         return "HANDLE_MENU"
+    elif query.data.startswith('delete'):
+        product_id = query.data.split(',')[1]
+        delete_product_from_cart(token, product_id, chat_id)
+        bot.answer_callback_query(callback_query_id=query.id, text='Товар удален из корзины', show_alert=False)
+        products_cart = get_cart(token, reference=chat_id)
+        carts_sum = get_carts_sum(token, chat_id)
+        print(products_cart)
+        message = ''
+        for product in products_cart:
+            cart_description = f"""\
+                                           {product["name"]}
+                                           {product["description"]} 
+                                           {product["unit_price"]["amount"]} per kg 
+                                           {product["quantity"]} kg in cart for ${product["value"]["amount"]}
+                                           ______________________________
+
+                                            """
+            message += dedent(cart_description)
+        sum_message = f"""\
+                                    Total: {carts_sum}
+
+                                """
+        message += dedent(sum_message)
+        # print(666, products_cart)
+        keyboard = [[InlineKeyboardButton(f'Удалить {product["name"]}', callback_data=f'delete,{product["id"]}')] for
+                    product in
+                    products_cart]
+        if products_cart:
+            keyboard.append([InlineKeyboardButton('Оплата', callback_data='pay')])
+        keyboard.append([InlineKeyboardButton('Меню', callback_data='start')])
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        bot.send_message(chat_id=chat_id, text=message, reply_markup=reply_markup)
+        return "HANDLE_DESCRIPTION"
 
 
 def get_database_connection(host, port, password):
