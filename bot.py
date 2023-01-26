@@ -71,7 +71,7 @@ def handle_menu(bot, update, token):
     keyboard = [[InlineKeyboardButton('1 кг', callback_data=f'{query.data},1'),
                  InlineKeyboardButton('5 кг', callback_data=f'{query.data},5'),
                  InlineKeyboardButton('10 кг', callback_data=f'{query.data},10')],
-                [InlineKeyboardButton('Назад', callback_data='back')]]
+                [InlineKeyboardButton('Назад', callback_data='start')]]
     reply_markup = InlineKeyboardMarkup(keyboard, n_cols=3)
     bot.send_photo(chat_id=query.message.chat_id, photo=image_url, caption=message, reply_markup=reply_markup)
     # bot.delete_message(chat_id=update.message.chat_id, message_id=update.message.message_id)
@@ -83,7 +83,7 @@ def handle_description(bot, update, token):
     chat_id = update.callback_query.message.chat_id
 
     print('handle_description_data', query.data)
-    if query.data == 'back':
+    if query.data == 'start':
         start(bot, update, token)
         return "HANDLE_MENU"
     else:
@@ -114,8 +114,6 @@ def handle_users_reply(bot, update, host, port, password, client_id, client_secr
     else:
         return
     if user_reply == '/start':
-        user_state = 'START'
-    elif user_reply == 'back':
         user_state = 'START'
     else:
         user_state = db.get(chat_id).decode("utf-8")
