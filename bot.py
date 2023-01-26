@@ -97,6 +97,27 @@ def handle_description(bot, update, token):
         return "HANDLE_DESCRIPTION"
 
 
+def handle_cart(bot, update, token):
+    query = update.callback_query
+    print(query)
+    chat_id = query['message']['chat']['id']
+    if query.data == 'cart':
+        # bot.send_message(chat_id=chat_id, text='Ваша корзина')
+        products_cart = get_cart(token, reference=chat_id)
+        carts_sum = get_carts_sum(token, reference=chat_id)
+        keyboard = [[InlineKeyboardButton(f'Удалить {product["name"]}', callback_data=product["id"])] for product in
+                    products_cart]
+        if products_cart:
+            keyboard.append([InlineKeyboardButton('Оплата', callback_data='pay')])
+        keyboard.append([InlineKeyboardButton('Меню', callback_data='start')])
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        bot.send_message(chat_id=chat_id, text='Ваша корзина', reply_markup=reply_markup)
+        return "HANDLE_DESCRIPTION"
+    elif query.data == 'start':
+        start(bot, update, token)
+        return "HANDLE_MENU"
+
+
 def get_database_connection(host, port, password):
     """
     Возвращает конекшн с базой данных Redis, либо создаёт новый, если он ещё не создан.
@@ -125,7 +146,8 @@ def handle_users_reply(bot, update, host, port, password, client_id, client_secr
     states_functions = {
         'START': functools.partial(start, token=token),
         'HANDLE_MENU': functools.partial(handle_menu, token=token),
-        'HANDLE_DESCRIPTION': functools.partial(handle_description, token=token)
+        'HANDLE_DESCRIPTION': functools.partial(handle_description, token=token),
+        'HANDLE_CART': functools.partial(handle_cart, token=token)
     }
     state_handler = states_functions[user_state]
 
