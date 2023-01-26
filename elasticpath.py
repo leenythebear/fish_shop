@@ -120,23 +120,20 @@ def get_carts_sum(token, chat_id):
     return response.json()['data']['meta']['display_price']['with_tax']['formatted']
 
 
-if __name__ == '__main__':
-    load_dotenv()
-    client_id = os.environ['CLIENT_ID']
-    client_secret = os.environ['CLIENT_SECRET']
+def create_customer(token, email, chat_id):
+    url = f'https://api.moltin.com/v2/customers'
+    headers = {
+        'Authorization': 'Bearer {}'.format(token),
+        'Content-Type': 'application/json'
+    }
+    json_data = {
+        'data': {
+            'type': 'customer',
+            'name': str(chat_id),
+            'email': email,
+            'password': ''
 
-    token = get_token(client_id, client_secret)
-
-    products = get_products(token)
-    product = products['data'][0]
-
-    cart_id = create_cart(token)
-
-    add_product_to_cart(cart_id, token, product)
-
-    cart = get_cart(token, cart_id)
-    print(222, cart)
-
-
-
-
+        },
+    }
+    response = requests.post(url, headers=headers, json=json_data)
+    response.raise_for_status()
