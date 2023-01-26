@@ -78,8 +78,7 @@ def handle_menu(bot, update, token):
 
 def handle_description(bot, update, token):
     query = update.callback_query
-    chat_id = update.callback_query.message.chat_id
-
+    chat_id = query['message']['chat']['id']
     print('handle_description_data', query.data)
     if query.data == 'start':
         start(bot, update, token)
