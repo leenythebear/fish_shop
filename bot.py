@@ -84,11 +84,12 @@ def handle_description(bot, update, token):
     if query.data == 'start':
         start(bot, update, token)
         return "HANDLE_MENU"
-    else:
-        product_id, product_quantity = query.data.split(',')
+    split_query = query.data.split(',')
+    if len(split_query) == 2:
+        product_id, product_quantity = split_query
         add_product_to_cart(chat_id, token, product_id, int(product_quantity))
         cart = get_cart(token, chat_id)
-        return "HANDLE_DESCRIPTION"
+    return "HANDLE_DESCRIPTION"
 
 
 def get_database_connection(host, port, password):
