@@ -91,8 +91,8 @@ def add_product_to_cart(cart_id, token, product, product_quantity):
     return response.json()
 
 
-def get_cart(token, reference):
-    cart_url = f'https://api.moltin.com/v2/carts/{reference}/items'
+def get_cart(token, chat_id):
+    cart_url = f'https://api.moltin.com/v2/carts/{chat_id}/items'
     headers = {
         'Authorization': 'Bearer {}'.format(token),
     }
@@ -101,8 +101,8 @@ def get_cart(token, reference):
     return response.json()['data']
 
 
-def delete_product_from_cart(token, product_id, reference):
-    url = f'https://api.moltin.com/v2/carts/{reference}/items/{product_id}'
+def delete_product_from_cart(token, product_id, chat_id):
+    url = f'https://api.moltin.com/v2/carts/{chat_id}/items/{product_id}'
     headers = {
         'Authorization': 'Bearer {}'.format(token),
     }
@@ -110,8 +110,8 @@ def delete_product_from_cart(token, product_id, reference):
     response.raise_for_status()
 
 
-def get_carts_sum(token, reference):
-    carts_sum_url = f'https://api.moltin.com/v2/carts/{reference}'
+def get_carts_sum(token, chat_id):
+    carts_sum_url = f'https://api.moltin.com/v2/carts/{chat_id}'
     headers = {
         'Authorization': 'Bearer {}'.format(token),
     }
