@@ -68,12 +68,10 @@ def handle_menu(bot, update, token):
 def handle_description(bot, update, token):
     query = update.callback_query
     chat_id = query['message']['chat']['id']
-    print('handle_description_data', query.data)
     if query.data == 'start':
         start(bot, update, token)
         return "HANDLE_MENU"
     elif query.data == 'cart':
-        print(111)
         handle_cart(bot, update, token)
         return "HANDLE_CART"
     else:
@@ -87,7 +85,6 @@ def handle_description(bot, update, token):
 
 def handle_cart(bot, update, token):
     query = update.callback_query
-    print(query)
     chat_id = query['message']['chat']['id']
     if query.data == 'cart':
         products_cart = get_cart(token, reference=chat_id)
@@ -108,7 +105,6 @@ def handle_cart(bot, update, token):
                                 
                         """
         message += dedent(sum_message)
-        # print(666, products_cart)
         keyboard = [[InlineKeyboardButton(f'Удалить {product["name"]}', callback_data=f'delete,{product["id"]}')] for product in
                     products_cart]
         if products_cart:
@@ -126,7 +122,6 @@ def handle_cart(bot, update, token):
         bot.answer_callback_query(callback_query_id=query.id, text='Товар удален из корзины', show_alert=False)
         products_cart = get_cart(token, reference=chat_id)
         carts_sum = get_carts_sum(token, chat_id)
-        print(products_cart)
         message = ''
         for product in products_cart:
             cart_description = f"""\
@@ -143,7 +138,6 @@ def handle_cart(bot, update, token):
 
                                 """
         message += dedent(sum_message)
-        # print(666, products_cart)
         keyboard = [[InlineKeyboardButton(f'Удалить {product["name"]}', callback_data=f'delete,{product["id"]}')] for
                     product in
                     products_cart]
@@ -187,7 +181,6 @@ def handle_users_reply(bot, update, host, port, password, client_id, client_secr
         'HANDLE_CART': functools.partial(handle_cart, token=token)
     }
     state_handler = states_functions[user_state]
-
     try:
         next_state = state_handler(bot, update)
         db.set(chat_id, next_state)
