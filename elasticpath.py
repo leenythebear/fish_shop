@@ -101,6 +101,16 @@ def get_cart(token, reference):
     return response.json()['data']
 
 
+def get_carts_sum(token, reference):
+    carts_sum_url = f'https://api.moltin.com/v2/carts/{reference}'
+    headers = {
+        'Authorization': 'Bearer {}'.format(token),
+    }
+    response = requests.get(carts_sum_url, headers=headers)
+    response.raise_for_status()
+    return response.json()['data']['meta']['display_price']['with_tax']['formatted']
+
+
 if __name__ == '__main__':
     load_dotenv()
     client_id = os.environ['CLIENT_ID']
