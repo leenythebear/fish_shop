@@ -26,7 +26,6 @@ def get_products(token):
 
 
 def get_product_by_id(product_id, token):
-    # token = get_token(client_id, client_secret)
     headers = {
         "Authorization": f"Bearer {token}",
     }
