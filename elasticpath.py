@@ -22,6 +22,7 @@ def get_products(token):
         "Authorization": "Bearer {}".format(token),
     }
     response = requests.get(products_url, headers=headers)
+    response.raise_for_status()
     return response.json()
 
 
