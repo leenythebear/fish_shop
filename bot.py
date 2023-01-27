@@ -276,8 +276,6 @@ if __name__ == "__main__":
     client_id = os.environ["CLIENT_ID"]
     client_secret = os.environ["CLIENT_SECRET"]
 
-    elasticpath_token = get_token(client_id, client_secret)
-
     db_host = os.environ["DATABASE_HOST"]
     db_port = os.environ["DATABASE_PORT"]
     db_password = os.environ["DATABASE_PASSWORD"]
