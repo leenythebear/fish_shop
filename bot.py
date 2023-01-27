@@ -252,7 +252,7 @@ def handle_users_reply(
         user_state = "START"
     else:
         user_state = db.get(chat_id).decode("utf-8")
-    token = get_token(client_id, client_secret)
+    token = get_token(client_id, client_secret, db)
     states_functions = {
         "START": functools.partial(start, token=token),
         "HANDLE_MENU": functools.partial(handle_menu, token=token),
