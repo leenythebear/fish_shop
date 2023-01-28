@@ -2,7 +2,7 @@ import requests as requests
 
 
 def get_token(client_id, client_secret, db):
-    access_token = db.get('access_token').decode()
+    access_token = db.get('access_token')
     if not access_token:
         token_url = "https://api.moltin.com/oauth/access_token"
         data = {
@@ -16,6 +16,8 @@ def get_token(client_id, client_secret, db):
         time_to_expire = token_info['expires_in']
         access_token = token_info['access_token']
         db.set('access_token', access_token, ex=time_to_expire)
+    else:
+        access_token = access_token.decode()
     return access_token
 
 
