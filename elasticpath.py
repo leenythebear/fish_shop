@@ -1,12 +1,9 @@
-import os
-
 import requests as requests
-from dotenv import load_dotenv
 
 
 def get_token(client_id, client_secret, db):
-    token = db.get('access_token')
-    if not token:
+    access_token = db.get('access_token').decode()
+    if not access_token:
         token_url = "https://api.moltin.com/oauth/access_token"
         data = {
             "client_id": client_id,
@@ -16,10 +13,10 @@ def get_token(client_id, client_secret, db):
         response = requests.post(token_url, data=data)
         response.raise_for_status()
         token_info = response.json()
-        time_to_expire = token_info['expire_in']
-        token = token_info['access_token']
-        db.set('access_token', token, ex=time_to_expire)
-    return token
+        time_to_expire = token_info['expires_in']
+        access_token = token_info['access_token']
+        db.set('access_token', access_token, ex=time_to_expire)
+    return access_token
 
 
 def get_products(token):
